@@ -241,16 +241,17 @@
         <div class="buy-box">
             <h2>H-Boost Ultra</h2>
             <ul>
-                <li>✔ Mejora tu HitDetection</li>
-                <li>✔ Optimiza tu Knockback</li>
-                <li>✔ No es baneable</li>
+                <li>✔ Boost your network</li>
+                <li>✔ Optimize your Knockback</li>
+                <li>✔ Improve your Hitdetection</li>
+                <li>✔ It is not bannable</li>
             </ul>
 
             <div id="paypal-single-button" style="margin-top:10px; text-align:center;">
                 <form action="https://www.paypal.com/ncp/payment/G34GYKWEZCNLG" method="post" target="_blank" style="display:inline-block;">
                     <input type="submit" value="Comprar ahora" style="min-width:150px; padding:10px 20px; font-size:16px; font-weight:bold; background-color:#FFD140; color:#000; border:none; border-radius:0.25rem; cursor:pointer;"/>
                     <div style="margin-top:5px; font-size:0.75rem;">
-                        Con la tecnología de <img src="https://www.paypalobjects.com/paypal-ui/logos/svg/paypal-wordmark-color.svg" alt="paypal" style="height:14px; vertical-align:middle;"/>
+                        With the technology of <img src="https://www.paypalobjects.com/paypal-ui/logos/svg/paypal-wordmark-color.svg" alt="paypal" style="height:14px; vertical-align:middle;"/>
                     </div>
                 </form>
             </div>
@@ -269,9 +270,38 @@
     <div class="divider"></div>
 
     <footer style="background-color:#111111;color:#fff;padding:40px 20px;text-align:center;">
-        <div style="margin-bottom:15px;font-size:18px;">📧 Contacto: <a href="mailto:contact@h-regedit.com" style="color:#00bfff;text-decoration:none;">contact@h-regedit.com</a></div>
-        <div style="font-size:16px;">&copy; 2025 <strong>H-Regedit</strong>. Todos los derechos reservados.</div>
-    </footer>
+    <div style="margin-bottom:15px;font-size:18px;">
+        📧 Contacto: <a href="mailto:contact@h-regedit.com" style="color:#00bfff;text-decoration:none;">contact@h-regedit.com</a>
+    </div>
+    
+    <!-- Redes sociales -->
+    <div style="margin:20px 0; display:flex; justify-content:center; gap:20px; font-size:24px;">
+        <!-- Discord -->
+        <a href="https://discord.gg/https://discord.gg/RNQeXUjrDb" target="_blank">
+            <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/discord.svg" alt="Discord" style="width:30px; height:30px; filter: invert(100%); transition: transform 0.3s;">
+        </a>
+        <!-- YouTube -->
+        <a href="https://www.youtube.com/c/@FKI_" target="_blank">
+            <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/youtube.svg" alt="YouTube" style="width:30px; height:30px; filter: invert(100%); transition: transform 0.3s;">
+        </a>
+        <!-- Gmail -->
+        <a href="mailto:contact@h-regedit.com">
+            <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/gmail.svg" alt="Gmail" style="width:30px; height:30px; filter: invert(100%); transition: transform 0.3s;">
+        </a>
+    </div>
+
+    <div style="font-size:16px;">&copy; 2025 <strong>H-Regedit</strong>. All rights reserved.</div>
+</footer>
+
+<script>
+    // Hover efecto para los íconos
+    const socialIcons = document.querySelectorAll('footer a img');
+    socialIcons.forEach(icon => {
+        icon.addEventListener('mouseenter', () => icon.style.transform = 'scale(1.2)');
+        icon.addEventListener('mouseleave', () => icon.style.transform = 'scale(1)');
+    });
+</script>
+
 
     <button id="btnUp" onclick="scrollToTop()">&#8679;</button>
 
