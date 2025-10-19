@@ -8,6 +8,7 @@
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
     <style>
         body {
@@ -28,6 +29,7 @@
             text-align:center;
             max-width:400px;
             width:100%;
+            position: relative;
         }
 
         input {
@@ -67,14 +69,23 @@
             text-decoration: underline;
             color: #00bfff;
         }
+
+        #backBtn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <div class="auth-box">
+        <div id="backBtn" onclick="window.history.back()">&#8592;</div>
         <h2 id="formTitle">Iniciar Sesión</h2>
         <input type="email" id="email" placeholder="Correo electrónico" />
         <input type="password" id="password" placeholder="Contraseña" />
-        <!-- Este input solo aparece en registro -->
         <input type="password" id="password2" placeholder="Reingresa tu contraseña" style="display:none;" />
         <button id="actionBtn">Iniciar Sesión</button>
         <div id="errorMsg"></div>
@@ -94,6 +105,7 @@
         };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
+        const db = firebase.firestore();
 
         const email = document.getElementById('email');
         const password = document.getElementById('password');
@@ -123,6 +135,14 @@
 
         toggleMode.addEventListener('click', switchMode);
 
+        function generateHWID() {
+            let hwid = '';
+            for(let i=0;i<16;i++){
+                hwid += Math.floor(Math.random()*10);
+            }
+            return hwid;
+        }
+
         actionBtn.addEventListener('click', ()=>{
             const emailVal = email.value.trim();
             const passVal = password.value.trim();
@@ -141,11 +161,33 @@
 
             if(isLoginMode){
                 auth.signInWithEmailAndPassword(emailVal, passVal)
-                .then(()=> window.location.href="dashboard.html")
+                .then(userCredential => {
+                    const user = userCredential.user;
+                    // Si el usuario no tiene hwid en Firestore, lo crea vacío
+                    db.collection('users').doc(user.uid).get().then(doc=>{
+                        if(!doc.exists){
+                            db.collection('users').doc(user.uid).set({
+                                purchased: false,
+                                hwid: null
+                            }).then(()=> window.location.href="dashboard.html");
+                        } else {
+                            window.location.href="dashboard.html";
+                        }
+                    });
+                })
                 .catch(error => errorMsg.textContent = error.message);
             } else {
                 auth.createUserWithEmailAndPassword(emailVal, passVal)
-                .then(()=> window.location.href="dashboard.html")
+                .then(userCredential => {
+                    const user = userCredential.user;
+                    // Crear documento en Firestore con hwid nulo inicialmente
+                    db.collection('users').doc(user.uid).set({
+                        purchased: false,
+                        hwid: null
+                    }).then(()=>{
+                        window.location.href="dashboard.html";
+                    });
+                })
                 .catch(error => errorMsg.textContent = error.message);
             }
         });
@@ -153,7 +195,16 @@
         // Redirigir si ya está logueado
         auth.onAuthStateChanged(user => {
             if(user){
-                window.location.href = "dashboard.html";
+                db.collection('users').doc(user.uid).get().then(doc=>{
+                    if(!doc.exists){
+                        db.collection('users').doc(user.uid).set({
+                            purchased: false,
+                            hwid: null
+                        }).then(()=> window.location.href="dashboard.html");
+                    } else {
+                        window.location.href="dashboard.html";
+                    }
+                });
             }
         });
     </script>

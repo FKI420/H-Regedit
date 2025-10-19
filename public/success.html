@@ -1,0 +1,27 @@
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+    apiKey: "...",
+    authDomain: "...",
+    projectId: "...",
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// Obtener uid y hwid desde URL
+const params = new URLSearchParams(window.location.search);
+const uid = params.get("uid");
+const hwid = params.get("hwid");
+
+if(uid && hwid){
+    db.collection('users').doc(uid).update({
+        purchased: true,
+        hwid: hwid
+    }).then(() => {
+        alert("Pago aprobado! HWID generado y guardado.");
+        window.location.href = "dashboard.html";
+    }).catch(err => console.error(err));
+}
+</script>

@@ -323,6 +323,33 @@
         });
 
         const mp = new MercadoPago("APP_USR-d99d8181-527b-423a-bfbe-b1d506ea7f62", { locale: 'es-AR' });
+        document.getElementById('mpCheckoutBtn').addEventListener('click', async function(){
+    try {
+        const user = firebase.auth().currentUser;
+        if(!user) return alert("Debes iniciar sesión primero.");
+
+        const response = await fetch('https://us-central1-h-boost-ultra.cloudfunctions.net/createPreference', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: user.email, uid: user.uid })
+        });
+
+        const data = await response.json();
+        const preferenceId = data.preferenceId;
+
+        if(preferenceId){
+            mp.checkout({
+                preference: { id: preferenceId },
+                autoOpen: true
+            });
+        } else {
+            alert('Error al generar la preferencia de pago.');
+        }
+    } catch(err){
+        console.error(err);
+        alert('Error al conectarse con MercadoPago.');
+    }
+});
 
         document.getElementById('mpCheckoutBtn').addEventListener('click', async function(){
             try {
