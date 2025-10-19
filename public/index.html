@@ -6,10 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- PAYPAL SCRIPT -->
-    <script src="https://www.paypal.com/sdk/js?client-id=BAAA-TvOu0amZ8Ra-1jUeX8QfhJxbq0tCC0-QV2w23iwQfyAxEDbiokY67BHILUR_Ck23NnIOszBlCCiJY&components=hosted-buttons&disable-funding=venmo&currency=USD"></script>
-
-    <!-- MERCADOPAGO SDK -->
-    <script src="https://sdk.mercadopago.com/js/v2"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=AeU53wmq91mtIajr2xps64jpq7gwQUQxdZvEcTvfbroByToyKTBXUMuUcwMw78SI5JdYy0G7-x9NXauR&currency=USD"></script>
 
     <!-- FIREBASE -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -224,8 +221,6 @@
         </nav>
     </header>
 
-    <div class="spacer"></div>
-
     <section id="home" style="background-image:url('images/home-bg.jpg');">
         <div style="position:absolute; top:87%; left:50%; transform:translate(-50%,-50%); max-width:600px; padding:30px; border-radius:8px; color:white; font-size:25px; text-align:center; line-height:1.5;">
             Welcome to the official page of <strong>H-Boost Ultra</strong>, optimization software, focused and designed for Minecraft to improve quality in latency.
@@ -252,12 +247,6 @@
                 <li>✔ No es baneable</li>
             </ul>
 
-            <label for="paymentMethod">Selecciona método de pago:</label>
-            <select id="paymentMethod">
-                <option value="paypal">PayPal</option>
-                <option value="mercadopago">MercadoPago</option>
-            </select>
-
             <div id="paypal-single-button" style="margin-top:10px; text-align:center;">
                 <form action="https://www.paypal.com/ncp/payment/G34GYKWEZCNLG" method="post" target="_blank" style="display:inline-block;">
                     <input type="submit" value="Comprar ahora" style="min-width:150px; padding:10px 20px; font-size:16px; font-weight:bold; background-color:#FFD140; color:#000; border:none; border-radius:0.25rem; cursor:pointer;"/>
@@ -265,15 +254,6 @@
                         Con la tecnología de <img src="https://www.paypalobjects.com/paypal-ui/logos/svg/paypal-wordmark-color.svg" alt="paypal" style="height:14px; vertical-align:middle;"/>
                     </div>
                 </form>
-            </div>
-
-            <div id="mp-single-button" style="margin-top:10px; text-align:center; display:none;">
-                <button id="mpCheckoutBtn" style="min-width:150px; padding:10px 20px; font-size:16px; font-weight:bold; background-color:#00bfff; color:#fff; border:none; border-radius:0.25rem; cursor:pointer;">
-                    Comprar con MercadoPago
-                </button>
-                <div style="margin-top:5px; font-size:0.75rem;">
-                    Con la tecnología de <img src="https://http2.mlstatic.com/frontend-assets/ui-navigation/5.14.3/mercadopago/logo__small.png" alt="MercadoPago" style="height:14px; vertical-align:middle;"/>
-                </div>
             </div>
         </div>
     </section>
@@ -297,6 +277,7 @@
     <button id="btnUp" onclick="scrollToTop()">&#8679;</button>
 
     <script>
+        // Firebase config
         const firebaseConfig = {
             apiKey: "AIzaSyCXt6578vpprBbRxJWCmPJRzVZLl6pQEHc",
             authDomain: "h-boost-ultra.firebaseapp.com",
@@ -307,69 +288,6 @@
             measurementId: "G-J8DH7KPVST"
         };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        document.getElementById('paymentMethod').addEventListener('change', function(){
-            const paypalBtn = document.getElementById('paypal-single-button');
-            const mpBtn = document.getElementById('mp-single-button');
-            if(this.value==='paypal'){
-                paypalBtn.style.display='block';
-                mpBtn.style.display='none';
-            } else {
-                paypalBtn.style.display='none';
-                mpBtn.style.display='block';
-            }
-        });
-
-        const mp = new MercadoPago("APP_USR-d99d8181-527b-423a-bfbe-b1d506ea7f62", { locale: 'es-AR' });
-        document.getElementById('mpCheckoutBtn').addEventListener('click', async function(){
-    try {
-        const user = firebase.auth().currentUser;
-        if(!user) return alert("Debes iniciar sesión primero.");
-
-        const response = await fetch('https://us-central1-h-boost-ultra.cloudfunctions.net/createPreference', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: user.email, uid: user.uid })
-        });
-
-        const data = await response.json();
-        const preferenceId = data.preferenceId;
-
-        if(preferenceId){
-            mp.checkout({
-                preference: { id: preferenceId },
-                autoOpen: true
-            });
-        } else {
-            alert('Error al generar la preferencia de pago.');
-        }
-    } catch(err){
-        console.error(err);
-        alert('Error al conectarse con MercadoPago.');
-    }
-});
-
-        document.getElementById('mpCheckoutBtn').addEventListener('click', async function(){
-            try {
-                const response = await fetch('https://localhost:5081/api/MercadoPago/CreatePreference');
-                const data = await response.json();
-                const preferenceId = data.preferenceId;
-
-                if(preferenceId){
-                    mp.checkout({
-                        preference: { id: preferenceId },
-                        autoOpen: true
-                    });
-                } else {
-                    alert('Error al generar la preferencia de pago.');
-                }
-            } catch(err){
-                console.error(err);
-                alert('Error al conectarse con MercadoPago.');
-            }
-        });
 
         function toggleMenu(){ document.getElementById('menu').classList.toggle('active'); }
         function closeMenu(){ document.getElementById('menu').classList.remove('active'); }
