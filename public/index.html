@@ -1,177 +1,109 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>H-Regedit</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>H-Boost Ultra - Comprar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- PAYPAL SDK (cambiar client-id según sandbox o producción) -->
-    <script src="https://www.paypal.com/sdk/js?client-id=TU_CLIENT_ID_AQUI&currency=USD"></script>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-    <!-- FIREBASE -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <!-- PayPal SDK (modo Sandbox) -->
+  <script src="https://www.paypal.com/sdk/js?client-id=TU_CLIENT_ID_SANDBOX&currency=USD"></script>
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-        body { font-family: 'Roboto', sans-serif; margin:0; scroll-behavior:smooth; }
-        header { display:flex; align-items:center; padding:15px 10px; background:linear-gradient(90deg,#1e3c72,#2a5298); color:white; position:fixed; width:100%; top:0; z-index:1000; box-shadow:0 4px 10px rgba(0,0,0,0.3);}
-        header h1 { margin:0; font-size:28px; margin-right:20px;}
-        nav { display:flex; gap:25px; position:absolute; left:50%; transform:translateX(-50%);}
-        nav a { color:white; text-decoration:none; font-weight:700; position:relative; transition:all 0.3s ease;}
-        nav a::after { content:''; display:block; height:3px; background:#00bfff; transition:width 0.3s; width:0;}
-        nav a:hover::after, nav a.active::after { width:100%;}
-        nav a:hover, nav a.active { color:#00bfff;}
-        .buy-box { background-color: rgba(0,0,0,0.6); color:#fff; padding:30px 50px; border-radius:15px; text-align:center; font-size:20px; max-width:400px; margin:0 auto; box-shadow:0 4px 15px rgba(0,0,0,0.4); display:flex; flex-direction:column; gap:20px;}
-        .buy-box ul { list-style:none; padding:0; margin:0;}
-        .buy-box li { margin-bottom:10px; font-weight:bold;}
-        .menu-toggle { display:none; flex-direction:column; cursor:pointer;}
-        .menu-toggle div { width:28px; height:3px; background:white; margin:5px 0; transition:0.4s;}
-        section { width:100%; height:580px; color:white; overflow:hidden; background-size:cover; background-position:center; background-repeat:no-repeat; position:relative; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;}
-        .divider { height:30px; background:linear-gradient(to right,#000,#333,#000); width:100%;}
-        .anim-element { opacity:0; transform:translateY(30px); transition:all 0.8s ease-out;}
-        .anim-element.visible { opacity:1; transform:translateY(0);}
-        #btnUp { position:fixed; bottom:30px; right:30px; display:none; background-color:#00bfff; color:white; border:none; padding:14px 18px; border-radius:50%; cursor:pointer; font-size:20px; z-index:1001; box-shadow:0px 6px 12px rgba(0,0,0,0.3); transition:all 0.3s ease, transform 0.3s ease;}
-        #btnUp:hover { background-color:#0095cc; transform:scale(1.2) rotate(10deg);}
-        @media (max-width:768px){ header{flex-direction:row; justify-content:space-between; padding:10px 20px;} section{height:auto; padding:80px 20px;} nav{position:absolute; top:60px; right:0; background:linear-gradient(180deg,#1e3c72,#2a5298); flex-direction:column; width:200px; padding:10px; display:none; border-radius:0 0 10px 10px;} nav.active{display:flex;} .menu-toggle{display:flex;}}
-    </style>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0; padding: 0;
+      background: linear-gradient(135deg,#1e3c72,#2a5298);
+      color: white;
+      display: flex; flex-direction: column; align-items: center;
+    }
+
+    header {
+      width: 100%; padding: 15px; text-align: center;
+      background: rgba(0, 0, 0, 0.7); font-size: 24px; font-weight: bold;
+    }
+
+    .buy-box {
+      margin-top: 80px; background: rgba(0, 0, 0, 0.7);
+      padding: 30px; border-radius: 15px; max-width: 400px; width: 90%;
+      text-align: center;
+    }
+
+    #errorMsg { color: #ffaaaa; margin-top: 10px; }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>H-Regedit</h1>
-        <div class="menu-toggle" onclick="toggleMenu()"><div></div><div></div><div></div></div>
-        <nav id="menu">
-            <a href="#home" onclick="navigateTo(event,'home')">Home</a>
-            <a href="#software" onclick="navigateTo(event,'software')">Software</a>
-            <a href="#buy" onclick="navigateTo(event,'buy')">Buy</a>
-            <a href="#about" onclick="navigateTo(event,'about')">About</a>
-            <a href="profile.html">Profile</a>
-        </nav>
-    </header>
+  <header>H-Boost Ultra - Comprar</header>
 
-    <section id="home" style="background-image:url('images/home-bg.jpg');">
-        <div style="position:absolute; top:87%; left:50%; transform:translate(-50%,-50%); max-width:600px; padding:30px; border-radius:8px; color:white; font-size:25px; text-align:center; line-height:1.5;">
-            Welcome to the official page of <strong>H-Boost Ultra</strong>, optimization software, focused and designed for Minecraft to improve quality in latency.
-        </div>
-    </section>
+  <div class="buy-box">
+    <h2>H-Boost Ultra</h2>
+    <ul style="list-style:none; padding:0; text-align:left;">
+      <li>✔ Mejora tu HitDetection</li>
+      <li>✔ Optimiza tu Knockback</li>
+      <li>✔ No es baneable</li>
+    </ul>
 
-    <div class="divider"></div>
+    <div id="paypal-button-container" style="margin-top: 20px;"></div>
+    <div id="errorMsg"></div>
+  </div>
 
-    <section id="software" style="background-image:url('images/software-bg.jpg');">
-        <div style="position:absolute; top:50%; left:85%; transform:translate(-50%,-50%); max-width:600px; padding:30px; border-radius:8px; color:white; font-size:95px; text-align:center; line-height:1.5;">
-            <strong>Software</strong>
-        </div>
-    </section>
+  <script>
+    // 🔥 Firebase Configuración
+    const firebaseConfig = {
+      apiKey: "AIzaSyCXt6578vpprBbRxJWCmPJRzVZLl6pQEHc",
+      authDomain: "h-boost-ultra.firebaseapp.com",
+      projectId: "h-boost-ultra",
+      storageBucket: "h-boost-ultra.firebasestorage.app",
+      messagingSenderId: "243692079821",
+      appId: "1:243692079821:web:fe072c53a84b9138363784"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-    <div class="divider"></div>
+    // 🔒 Requiere login
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        alert('Debes iniciar sesión primero.');
+        window.location.href = 'profile.html';
+      }
+    });
 
-    <section id="buy" style="background-image:url('images/buy-bg.jpg');">
-        <h2 class="anim-element" style="margin-bottom:20px; position:relative; top:-30px; font-size:60px;">Store</h2>
-        <div class="buy-box">
-            <h2>H-Boost Ultra</h2>
-            <ul>
-                <li>✔ Mejora tu HitDetection</li>
-                <li>✔ Optimiza tu Knockback</li>
-                <li>✔ No es baneable</li>
-            </ul>
-            <!-- Contenedor para el botón de PayPal -->
-            <div id="paypal-button-container" style="margin-top:20px;"></div>
-        </div>
-    </section>
-
-    <div class="divider"></div>
-
-    <section id="about" style="background-image:url('images/about-bg.jpg');">
-        <h2 class="anim-element" style="margin-bottom:20px; position:relative; top:-70px;">About</h2>
-        <div style="position:absolute; top:60%; left:50%; transform:translate(-50%,-50%); max-width:700px; padding:20px; color:white; font-size:22px; text-align:center; line-height:1.6;">
-            H-Regedit was founded in 2019 by the CEO/owner <strong>Ian</strong>, who is currently focused on developing <strong>H-Boost Ultra</strong>, an optimization software 100% dedicated to Minecraft.
-        </div>
-    </section>
-
-    <div class="divider"></div>
-
-    <footer style="background-color:#111111;color:#fff;padding:40px 20px;text-align:center;">
-        <div style="margin-bottom:15px;font-size:18px;">📧 Contacto: <a href="mailto:contact@h-regedit.com" style="color:#00bfff;text-decoration:none;">contact@h-regedit.com</a></div>
-        <div style="font-size:16px;">&copy; 2025 <strong>H-Regedit</strong>. Todos los derechos reservados.</div>
-    </footer>
-
-    <button id="btnUp" onclick="scrollToTop()">&#8679;</button>
-
-    <script>
-        // Firebase config
-        const firebaseConfig = {
-            apiKey: "AIzaSyCXt6578vpprBbRxJWCmPJRzVZLl6pQEHc",
-            authDomain: "h-boost-ultra.firebaseapp.com",
-            projectId: "h-boost-ultra",
-            storageBucket: "h-boost-ultra.firebasestorage.app",
-            messagingSenderId: "243692079821",
-            appId: "1:243692079821:web:fe072c53a84b9138363784",
-            measurementId: "G-J8DH7KPVST"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        // Generar HWID aleatorio
-        function generateHWID() {
-            return 'HW-' + Math.random().toString(36).substring(2, 15) +
-                   Math.random().toString(36).substring(2, 15);
-        }
-
-        // Renderizar botón PayPal
-        paypal.Buttons({
-            style: { color: 'gold', shape: 'rect', label: 'paypal', layout: 'vertical' },
-            createOrder: function(data, actions) {
-                return actions.order.create({
-                    purchase_units: [{ amount: { value: '10.00' }, description: 'Compra de H-Boost Ultra' }]
-                });
-            },
-            onApprove: function(data, actions) {
-                return actions.order.capture().then(async function(details) {
-                    const user = auth.currentUser;
-                    if (!user) { alert("Debes iniciar sesión para registrar tu compra."); return; }
-
-                    const hwid = generateHWID();
-
-                    await db.collection("users").doc(user.uid).set({
-                        email: user.email,
-                        hwid: hwid,
-                        paymentStatus: "paid",
-                        transactionId: details.id,
-                        payerName: details.payer.name.given_name,
-                        date: new Date().toISOString()
-                    });
-
-                    alert(`✅ Pago exitoso, ${details.payer.name.given_name}! Tu HWID: ${hwid}`);
-                });
-            },
-            onError: function(err) {
-                console.error(err);
-                alert("❌ Error durante el pago con PayPal.");
-            }
-        }).render('#paypal-button-container');
-
-        // Funciones UI
-        function toggleMenu(){ document.getElementById('menu').classList.toggle('active'); }
-        function closeMenu(){ document.getElementById('menu').classList.remove('active'); }
-        const animElements = document.querySelectorAll('.anim-element');
-        const animObserver = new IntersectionObserver(entries => { entries.forEach(entry => { if(entry.isIntersecting){ entry.target.classList.add('visible'); } }); }, { threshold:0.2 });
-        animElements.forEach(el => animObserver.observe(el));
-        const btnUp = document.getElementById('btnUp');
-        const sections = document.querySelectorAll('section');
-        window.addEventListener('scroll', function(){
-            if(window.scrollY>300){ btnUp.style.display="block"; } else{ btnUp.style.display="none"; }
-            sections.forEach(section=>{
-                const top=section.offsetTop-90;
-                const bottom=top+section.offsetHeight;
-                const id=section.getAttribute('id');
-                const link=document.querySelector(`nav a[href="#${id}"]`);
-                if(window.scrollY>=top && window.scrollY<bottom) link.classList.add('active'); else link.classList.remove('active');
-            });
+    // 💵 PayPal integración
+    paypal.Buttons({
+      createOrder: function(data, actions) {
+        return actions.order.create({
+          purchase_units: [{
+            amount: { value: '10.00' } // precio de prueba
+          }]
         });
-        function scrollToTop(){ window.scrollTo({ top:0, behavior:'smooth' }); }
-        function navigateTo(event,id){ event.preventDefault(); const target=document.getElementById(id); const headerOffset=70; const elementPosition=target.getBoundingClientRect().top; const offsetPosition=elementPosition+window.pageYOffset-headerOffset; window.scrollTo({top:offsetPosition, behavior:"smooth"}); closeMenu(); }
-    </script>
+      },
+      onApprove: function(data, actions) {
+        return actions.order.capture().then(function(details) {
+          alert('Pago completado por ' + details.payer.name.given_name);
+          const user = firebase.auth().currentUser;
+          if (user) {
+            let hwid = '';
+            for (let i = 0; i < 16; i++) hwid += Math.floor(Math.random() * 10);
+
+            db.collection('users').doc(user.uid).set({
+              email: user.email,
+              purchased: true,
+              hwid: hwid
+            }, { merge: true })
+            .then(() => alert('HWID generado y guardado: ' + hwid))
+            .catch(err => {
+              console.error(err);
+              document.getElementById('errorMsg').textContent = 'Error al guardar HWID.';
+            });
+          }
+        });
+      }
+    }).render('#paypal-button-container');
+  </script>
 </body>
 </html>
