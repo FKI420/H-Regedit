@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil - H-Regedit</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+    <style>
+        body {
+            font-family:'Roboto', sans-serif;
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+            background: linear-gradient(135deg,#1e3c72,#2a5298);
+            color:white;
+            margin:0;
+            text-align:center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            background: #ff4b4b;
+            color:white;
+            cursor:pointer;
+            font-weight:bold;
+            font-size:16px;
+        }
+
+        button:hover {
+            background:#cc3a3a;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bienvenido, <span id="userEmail"></span></h1>
+    <button id="logoutBtn">Cerrar Sesión</button>
+
+    <script>
+        // Configuración Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCXt6578vpprBbRxJWCmPJRzVZLl6pQEHc",
+            authDomain: "h-boost-ultra.firebaseapp.com",
+            projectId: "h-boost-ultra",
+            storageBucket: "h-boost-ultra.firebasestorage.app",
+            messagingSenderId: "243692079821",
+            appId: "1:243692079821:web:fe072c53a84b9138363784",
+            measurementId: "G-J8DH7KPVST"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        const userEmail = document.getElementById('userEmail');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // Verificar usuario logueado
+        auth.onAuthStateChanged(user => {
+            if(user){
+                userEmail.textContent = user.email;
+            } else {
+                // Si no hay usuario, volver al login
+                window.location.href = "profile.html";
+            }
+        });
+
+        // Cerrar sesión
+        logoutBtn.addEventListener('click', () => {
+            auth.signOut().then(()=>{
+                window.location.href = "profile.html";
+            });
+        });
+    </script>
+</body>
+</html>

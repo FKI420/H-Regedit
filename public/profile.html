@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile - H-Regedit</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+            background: linear-gradient(135deg,#1e3c72,#2a5298);
+            color:white;
+            margin:0;
+        }
+
+        .auth-box {
+            background: rgba(0,0,0,0.7);
+            padding: 40px;
+            border-radius: 15px;
+            text-align:center;
+            max-width:400px;
+            width:100%;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 12px 25px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 8px;
+            background: #00bfff;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #0095cc;
+        }
+
+        #errorMsg {
+            margin-top: 10px;
+            color: #ffaaaa;
+        }
+
+        #toggleMode {
+            margin-top: 15px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: underline;
+            color: #00bfff;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-box">
+        <h2 id="formTitle">Iniciar Sesión</h2>
+        <input type="email" id="email" placeholder="Correo electrónico" />
+        <input type="password" id="password" placeholder="Contraseña" />
+        <!-- Este input solo aparece en registro -->
+        <input type="password" id="password2" placeholder="Reingresa tu contraseña" style="display:none;" />
+        <button id="actionBtn">Iniciar Sesión</button>
+        <div id="errorMsg"></div>
+        <div id="toggleMode">¿No tienes cuenta? Crea aquí una</div>
+    </div>
+
+    <script>
+        // Configuración Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCXt6578vpprBbRxJWCmPJRzVZLl6pQEHc",
+            authDomain: "h-boost-ultra.firebaseapp.com",
+            projectId: "h-boost-ultra",
+            storageBucket: "h-boost-ultra.firebasestorage.app",
+            messagingSenderId: "243692079821",
+            appId: "1:243692079821:web:fe072c53a84b9138363784",
+            measurementId: "G-J8DH7KPVST"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        const email = document.getElementById('email');
+        const password = document.getElementById('password');
+        const password2 = document.getElementById('password2');
+        const actionBtn = document.getElementById('actionBtn');
+        const toggleMode = document.getElementById('toggleMode');
+        const errorMsg = document.getElementById('errorMsg');
+        const formTitle = document.getElementById('formTitle');
+
+        let isLoginMode = true;
+
+        function switchMode(){
+            isLoginMode = !isLoginMode;
+            if(isLoginMode){
+                formTitle.textContent = "Iniciar Sesión";
+                actionBtn.textContent = "Iniciar Sesión";
+                toggleMode.textContent = "¿No tienes cuenta? Crea aquí una";
+                password2.style.display = "none";
+            } else {
+                formTitle.textContent = "Crear Cuenta";
+                actionBtn.textContent = "Registrarse";
+                toggleMode.textContent = "¿Ya tienes cuenta? Inicia sesión aquí";
+                password2.style.display = "block";
+            }
+            errorMsg.textContent = "";
+        }
+
+        toggleMode.addEventListener('click', switchMode);
+
+        actionBtn.addEventListener('click', ()=>{
+            const emailVal = email.value.trim();
+            const passVal = password.value.trim();
+            const pass2Val = password2.value.trim();
+            errorMsg.textContent = "";
+
+            if(!emailVal || !passVal || (!isLoginMode && !pass2Val)){
+                errorMsg.textContent = "Por favor completa todos los campos.";
+                return;
+            }
+
+            if(!isLoginMode && passVal !== pass2Val){
+                errorMsg.textContent = "Las contraseñas no coinciden.";
+                return;
+            }
+
+            if(isLoginMode){
+                auth.signInWithEmailAndPassword(emailVal, passVal)
+                .then(()=> window.location.href="dashboard.html")
+                .catch(error => errorMsg.textContent = error.message);
+            } else {
+                auth.createUserWithEmailAndPassword(emailVal, passVal)
+                .then(()=> window.location.href="dashboard.html")
+                .catch(error => errorMsg.textContent = error.message);
+            }
+        });
+
+        // Redirigir si ya está logueado
+        auth.onAuthStateChanged(user => {
+            if(user){
+                window.location.href = "dashboard.html";
+            }
+        });
+    </script>
+</body>
+</html>
